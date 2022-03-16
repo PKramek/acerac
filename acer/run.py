@@ -110,7 +110,7 @@ def main():
     environment_with_reward_shaping = RewardShapingEnvironmentCreator(
         "Humanoid-v2", args.gamma,
         fi_x,
-        fi_x([1.4]))  # 1.4 is the value of mean (starting) value of vertical position (z-axis)
+        fi_x([1.4]))  # 1.4 is the mean (starting) value of vertical position (z-axis)
 
     gym.envs.register(
         id="RewardShapingHumanoid-v2",
