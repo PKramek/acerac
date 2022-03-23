@@ -164,6 +164,8 @@ def main():
         n_step = n_step * timesteps_increase
         print(f'Auto-adapted n_step to {n_step}')
 
+        print(f"eval_env_name={args.eval_env_name}")
+
     if use_cpu:
         tf.config.set_visible_devices([], 'GPU')
 
@@ -182,7 +184,8 @@ def main():
         do_checkpoint=not no_checkpoint,
         record_time_steps=record_time_steps,
         n_step=n_step,
-        dump=dump
+        dump=dump,
+        evaluation_environment_name=args.eval_env_name
     )
 
     def handle_sigint(sig, frame):

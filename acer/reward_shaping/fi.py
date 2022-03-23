@@ -1,6 +1,7 @@
-import numpy as np
 from abc import ABC, abstractmethod
 from typing import Type
+
+import numpy as np
 
 
 class Fi(ABC):
@@ -22,8 +23,7 @@ class HumanoidFi(Fi):
         return prob_density
 
     def __call__(self, state):
-        # Value of density function is multiplied by 2000, so that its highest possible value is around 300
-        return 2000 * HumanoidFi._normal_dist_density(state[0], 1.4, 0.05)
+        return 0.0 if 1.35 < state[0] < 1.45 else -np.power((1.4 - state[0]) * 100, 2)
 
 
 class FiFactory:
