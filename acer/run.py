@@ -15,7 +15,8 @@ from utils import calculate_gamma, getDTChangedEnvName
 parser = argparse.ArgumentParser(description='BaseActor-Critic with experience replay.')
 parser.add_argument('--algo', type=str, help='Algorithm to be used', default="acer", choices=ALGOS)
 parser.add_argument('--env_name', type=str, help='OpenAI Gym environment name', default="CartPole-v0")
-parser.add_argument('--eval_env_name', type=str, help='OpenAI Gym environment name', default="Humanoid-v2")
+parser.add_argument('--eval_env_name', type=str, help='Name of the OpenAI Gym environment used for evaluation',
+                    default=None)
 parser.add_argument('--gamma', type=float, help='discount factor', required=False, default=0.99)
 parser.add_argument('--lam', type=float, help='lambda parameter', required=False, default=0.9)
 parser.add_argument('--b', type=float, help='probability density truncation coefficient',
@@ -169,6 +170,11 @@ def main():
     if use_cpu:
         tf.config.set_visible_devices([], 'GPU')
 
+    if args.eval_env_name is None:
+        eval_env_name = env_name
+    else:
+        eval_env_name = args.eval_env_name
+
     runner = Runner(
         environment_name=env_name,
         algorithm=algorithm,
@@ -185,7 +191,7 @@ def main():
         record_time_steps=record_time_steps,
         n_step=n_step,
         dump=dump,
-        evaluation_environment_name=args.eval_env_name
+        evaluation_environment_name=eval_env_name
     )
 
     def handle_sigint(sig, frame):
