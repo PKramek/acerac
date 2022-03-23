@@ -1,28 +1,25 @@
 import datetime
 import json
-
 import logging
 import time
-from typing import Optional, List, Union, Tuple
 from pathlib import Path
+from typing import Optional, List, Union, Tuple
 
 import gym
-import pybullet_envs
 import numpy as np
 import tensorflow as tf
 from gym import wrappers
 
-from logger import CSVLogger
 from algos.acer import ACER
 from algos.acerac import ACERAC
 from algos.base import BaseACERAgent
+from logger import CSVLogger
 from utils import getPossiblyDTChangedEnvBuilder
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)-5.5s]  %(message)s",
 )
-
 
 ALGOS = {
     'acer': ACER,
@@ -34,7 +31,7 @@ def _get_agent(algorithm: str, parameters: Optional[dict], observations_space: g
                actions_space: gym.Space) -> BaseACERAgent:
     if not parameters:
         parameters = {}
-    
+
     if algorithm not in ALGOS:
         raise NotImplemented
 
@@ -43,21 +40,21 @@ def _get_agent(algorithm: str, parameters: Optional[dict], observations_space: g
 
 def _get_env(env_id: str, num_parallel_envs: int, asynchronous: bool = True) -> gym.vector.AsyncVectorEnv:
     builder = getPossiblyDTChangedEnvBuilder(env_id)
-    
+
     builders = [builder for _ in range(num_parallel_envs)]
     env = gym.vector.AsyncVectorEnv(builders) if asynchronous else gym.vector.SyncVectorEnv(builders)
     return env
 
 
 class Runner:
-
     MEASURE_TIME_TIME_STEPS = 1000
 
     def __init__(self, environment_name: str, algorithm: str = 'acer', algorithm_parameters: Optional[dict] = None,
                  num_parallel_envs: int = 5, evaluate_time_steps_interval: int = 1500, n_step: int = 1,
                  num_evaluation_runs: int = 5, log_dir: str = 'logs/', max_time_steps: int = -1,
                  record_end: bool = True, experiment_name: str = None, asynchronous: bool = True,
-                 log_tensorboard: bool = True, do_checkpoint: bool = True, record_time_steps: int = None, dump=()):
+                 log_tensorboard: bool = True, do_checkpoint: bool = True, record_time_steps: int = None, dump=(),
+                 evaluation_environment_name: str = 'Humanoid-v2'):
         """Trains and evaluates the agent.
 
         Args:
@@ -88,6 +85,7 @@ class Runner:
         self._log_tensorboard = log_tensorboard
         self._do_checkpoint = do_checkpoint
         self._env_name = environment_name
+        self._evaluate_env_name = evaluation_environment_name
         if experiment_name:
             self._log_dir = Path(
                 f"{log_dir}/{environment_name}_{algorithm}_{experiment_name}"
@@ -102,7 +100,7 @@ class Runner:
         self._record_end = record_end
         self._record_time_steps = record_time_steps
         self._env = _get_env(environment_name, num_parallel_envs, asynchronous)
-        self._evaluate_env = _get_env(environment_name, num_evaluation_runs, asynchronous)
+        self._evaluate_env = _get_env(evaluation_environment_name, num_evaluation_runs, asynchronous)
 
         self._done_steps_in_a_episode = [0] * self._n_envs
         self._returns = [0] * self._n_envs
@@ -178,7 +176,7 @@ class Runner:
             self._done_steps_in_a_episode[i] += 1
             is_done_gym = steps[2][i]
             is_maximum_number_of_steps_reached = self._max_steps_in_episode is not None \
-                and self._max_steps_in_episode == self._done_steps_in_a_episode[i]
+                                                 and self._max_steps_in_episode == self._done_steps_in_a_episode[i]
 
             is_done = is_done_gym and not is_maximum_number_of_steps_reached
             is_end = is_done or is_maximum_number_of_steps_reached
@@ -228,8 +226,8 @@ class Runner:
                     returns[i] += steps[1][i]
 
                     is_done_gym = steps[2][i]
-                    is_maximum_number_of_steps_reached = self._max_steps_in_episode is not None\
-                        and self._max_steps_in_episode == time_step
+                    is_maximum_number_of_steps_reached = self._max_steps_in_episode is not None \
+                                                         and self._max_steps_in_episode == time_step
 
                     is_end = is_done_gym or is_maximum_number_of_steps_reached
                     envs_finished[i] = is_end
@@ -265,8 +263,8 @@ class Runner:
                 steps = env.step(actions[0])
                 current_obs = np.array([steps[0]])
                 is_done_gym = steps[2]
-                is_maximum_number_of_steps_reached = self._max_steps_in_episode is not None\
-                    and self._max_steps_in_episode == time_step
+                is_maximum_number_of_steps_reached = self._max_steps_in_episode is not None \
+                                                     and self._max_steps_in_episode == time_step
 
                 is_end = is_done_gym or is_maximum_number_of_steps_reached
 

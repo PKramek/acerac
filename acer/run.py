@@ -15,6 +15,7 @@ from utils import calculate_gamma, getDTChangedEnvName
 parser = argparse.ArgumentParser(description='BaseActor-Critic with experience replay.')
 parser.add_argument('--algo', type=str, help='Algorithm to be used', default="acer", choices=ALGOS)
 parser.add_argument('--env_name', type=str, help='OpenAI Gym environment name', default="CartPole-v0")
+parser.add_argument('--eval_env_name', type=str, help='OpenAI Gym environment name', default="Humanoid-v2")
 parser.add_argument('--gamma', type=float, help='discount factor', required=False, default=0.99)
 parser.add_argument('--lam', type=float, help='lambda parameter', required=False, default=0.9)
 parser.add_argument('--b', type=float, help='probability density truncation coefficient',
