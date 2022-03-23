@@ -99,8 +99,11 @@ class Runner:
 
         self._record_end = record_end
         self._record_time_steps = record_time_steps
+
         self._env = _get_env(environment_name, num_parallel_envs, asynchronous)
         self._evaluate_env = _get_env(evaluation_environment_name, num_evaluation_runs, asynchronous)
+        logging.info(f"Environment set as: {environment_name}")
+        logging.info(f"Evaluation environment set as: {evaluation_environment_name}")
 
         self._done_steps_in_a_episode = [0] * self._n_envs
         self._returns = [0] * self._n_envs
