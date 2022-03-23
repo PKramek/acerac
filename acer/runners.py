@@ -242,6 +242,9 @@ class Runner:
             tf.summary.scalar('evaluation_return_mean', mean_returns, self._time_step)
             tf.summary.scalar('evaluation_return_std', std_returns, self._time_step)
 
+        logging.info(f"evaluation_return_mean: {mean_returns}")
+        logging.info(f"evaluation_return_std: {std_returns}")
+
         self._csv_logger.log_values(
             {'time_step': self._time_step, 'eval_return_mean': mean_returns, 'eval_std_mean': std_returns}
         )
