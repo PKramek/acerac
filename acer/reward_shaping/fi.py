@@ -25,12 +25,26 @@ class HumanoidFi(Fi):
     def __call__(self, state):
         return 0.0 if 1.35 < state[0] < 1.45 else -np.power((1.4 - state[0]) * 100, 2)
 
+class TStudentHeightLowPenaltyShiftedFiveHundred(Fi):
+    def __call__(self, state: np.ndarray):
+        return self._base_penalty(state) + 500
+
+    def _base_penalty(self, state: np.ndarray):
+        index = Constants.HEIGHT_INDEX
+        middle_of_dist = Constants.HEIGHT_NOMINAL_VALUE
+
+        degree_of_freedom = 0.01
+        scale = 0.35
+
+        return 10 * t.pdf(state[index], df=degree_of_freedom, scale=scale, loc=middle_of_dist)
+
 
 class FiFactory:
     FI_MAPPING = {
         'sum': SumFi,
         'humanoid': HumanoidFi,
-        'default': HumanoidFi
+        'default': HumanoidFi,
+        'tStudentFromSeminary' :TStudentHeightLowPenaltyShiftedFiveHundred
     }
 
     @staticmethod
